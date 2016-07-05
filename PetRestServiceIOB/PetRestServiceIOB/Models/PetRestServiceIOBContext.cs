@@ -26,5 +26,9 @@ namespace PetRestServiceIOB.Models
         public System.Data.Entity.DbSet<PetRestServiceIOB.Models.Owner> Owners { get; set; }
 
         public System.Data.Entity.DbSet<PetRestServiceIOB.Models.Approval> Approvals { get; set; }
+
+        public System.Data.Entity.DbSet<PetRestServiceIOB.Models.Token> Tokens { get; set; }
+
+        public System.Data.Entity.DbSet<PetRestServiceIOB.Models.User> Users { get; set; }
     }
 }

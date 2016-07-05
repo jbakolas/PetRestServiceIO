@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using PetRestServiceIOB.Filters;
 using PetRestServiceIOB.Models;
 using PetRestServiceIOB.Repositories;
 
@@ -16,7 +17,7 @@ namespace PetRestServiceIOB.Controllers
 {
     //[System.Web.Http.RoutePrefix("api/Pets")]
 
-    // [System.Web.Http.Authorize]
+    [AuthorizationRequired]
     public class PetsController : ApiController
     {
         private readonly IPetRepository _petRepository;
