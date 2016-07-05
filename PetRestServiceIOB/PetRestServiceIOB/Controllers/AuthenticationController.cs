@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using AttributeRouting.Web.Mvc;
+using AttributeRouting.Web.Http;
 using BusinessServices;
 using PetRestServiceIOB.Filters;
 using PetRestServiceIOB.Services;
@@ -21,11 +21,9 @@ namespace PetRestServiceIOB.Controllers
         }
 
         // Authenticates user and returns token with expiry.
-        
-        [POST("login")]
-        [POST("authenticate")]
-        [POST("get/token")]
-        public HttpResponseMessage Authenticate()
+
+    [POST("login"), POST("authenticate"), POST("get/token")]
+    public HttpResponseMessage Authenticate()
         {
             if (System.Threading.Thread.CurrentPrincipal != null && System.Threading.Thread.CurrentPrincipal.Identity.IsAuthenticated)
             {

@@ -13,7 +13,7 @@ namespace PetRestServiceIOB.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201607050120510_Initial"; }
+            get { return "201607050347174_Initial"; }
         }
         
         string IMigrationMetadata.Source
