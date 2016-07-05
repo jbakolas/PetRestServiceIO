@@ -12,5 +12,7 @@ namespace PetRestServiceIOB.Models
         public virtual Pet Pet { set; get; }
         [JsonIgnore]
         public virtual PetWalker PetWalker { set; get; }
+        [JsonIgnore]
+        public virtual Owner Owner { set; get; }
     }
 }
