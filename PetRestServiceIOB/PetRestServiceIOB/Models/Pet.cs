@@ -1,13 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Data.Common;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Web;
+using Newtonsoft.Json;
 
-namespace PetRestServiceIO.Models
+namespace PetRestServiceIOB.Models
 {
     public class Pet
     {
