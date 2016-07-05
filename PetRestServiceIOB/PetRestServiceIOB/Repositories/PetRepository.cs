@@ -25,15 +25,19 @@ namespace PetRestServiceIOB.Repositories
         {
             return context.Pets.Find(id);
         }
-        
+
         public IEnumerable<Pet> GetPetsByOwnerId(int ownerid)
         {
-            throw new NotImplementedException();
+            var subquery = context.Pets.Select(b => b.Owner.ownerId);
+            var _pets = context.Pets.Where(a => subquery.Contains(a.Owner.ownerId) && a.Owner.ownerId.Equals(ownerid));
+            return _pets;
         }
-        
+
         public IEnumerable<Pet> GetPetByAge(int nn)
         {
-            throw new NotImplementedException();
+            var list = context.Pets.ToList();
+            var _pets = list.Cast<Pet>().Where(p => p.BirthDate.AddYears(nn) >= DateTime.Now);
+            return _pets;
         }
 
         public void CreateNewPet(Pet pet)

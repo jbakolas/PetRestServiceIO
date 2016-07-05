@@ -10,24 +10,40 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using PetRestServiceIOB.Models;
+using PetRestServiceIOB.Repositories;
 
 namespace PetRestServiceIOB.Controllers
 {
+    //[System.Web.Http.RoutePrefix("api/Pets")]
+
+    // [System.Web.Http.Authorize]
     public class PetsController : ApiController
     {
-        private PetRestServiceIOBContext db = new PetRestServiceIOBContext();
+        private readonly IPetRepository _petRepository;
 
-        // GET: api/Pets
-        public IQueryable<Pet> GetPets()
+        public PetsController()
         {
-            return db.Pets;
+            this._petRepository = new PetRepository(new PetRestServiceIOBContext());
         }
 
-        // GET: api/Pets/5
-        [ResponseType(typeof(Pet))]
-        public async Task<IHttpActionResult> GetPet(int id)
+        public PetsController(PetRepository petRepository)
         {
-            Pet pet = await db.Pets.FindAsync(id);
+            this._petRepository = petRepository;
+        }
+
+        // GET: api/Pets
+        public IEnumerable<Pet> GetPets()
+        {
+            IEnumerable<Pet> pet = _petRepository.GetPets();
+            return pet;
+
+        }
+
+        // GET: api/Pets/1 
+        [ResponseType(typeof(Pet))]
+        public async Task<IHttpActionResult> GetPetById(int id)
+        {
+            Pet pet = _petRepository.Find(id);
             if (pet == null)
             {
                 return NotFound();
@@ -36,10 +52,37 @@ namespace PetRestServiceIOB.Controllers
             return Ok(pet);
         }
 
+        // POST: api/Pets
+        [ResponseType(typeof(Pet))]
+#pragma warning disable 1998
+        public async Task<IHttpActionResult> PostPet(Pet pet)
+#pragma warning restore 1998
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                _petRepository.CreateNewPet(pet);
+                _petRepository.Save();
+
+            }
+            catch (DataException)
+            {
+                //Log the error (uncomment dex variable name after DataException and add a line here to write a log. 
+                ModelState.AddModelError(string.Empty,
+                    "Unable to save changes. Try again, and if the problem persists contact your system administrator.");
+            }
+            return CreatedAtRoute("DefaultApi", new {id = pet.petId}, pet);
+        }
+
         // PUT: api/Pets/5
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutPet(int id, Pet pet)
         {
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -50,70 +93,40 @@ namespace PetRestServiceIOB.Controllers
                 return BadRequest();
             }
 
-            db.Entry(pet).State = EntityState.Modified;
+            _petRepository.UpdateExistingPet(pet);
 
             try
             {
-                await db.SaveChangesAsync();
+                _petRepository.Save();
+
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DataException)
             {
-                if (!PetExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                //Log the error (uncomment dex variable name after DataException and add a line here to write a log. 
+                ModelState.AddModelError(string.Empty,
+                    "Unable to save changes. Try again, and if the problem persists contact your system administrator.");
             }
-
-            return StatusCode(HttpStatusCode.NoContent);
-        }
-
-        // POST: api/Pets
-        [ResponseType(typeof(Pet))]
-        public async Task<IHttpActionResult> PostPet(Pet pet)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            db.Pets.Add(pet);
-            await db.SaveChangesAsync();
-
-            return CreatedAtRoute("DefaultApi", new { id = pet.petId }, pet);
-        }
-
-        // DELETE: api/Pets/5
-        [ResponseType(typeof(Pet))]
-        public async Task<IHttpActionResult> DeletePet(int id)
-        {
-            Pet pet = await db.Pets.FindAsync(id);
-            if (pet == null)
-            {
-                return NotFound();
-            }
-
-            db.Pets.Remove(pet);
-            await db.SaveChangesAsync();
 
             return Ok(pet);
+
         }
 
-        protected override void Dispose(bool disposing)
+        [System.Web.Http.Route("api/Pets/Age/{lcid:int?}")]
+        //[ResponseType(typeof(Pet))]
+        public IEnumerable<Pet> GetPetsAge(int nn)
         {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
+            IEnumerable<Pet> pets = _petRepository.GetPetByAge(nn);
+            return pets;
+
         }
 
-        private bool PetExists(int id)
+        [System.Web.Http.Route("api/Pets/Owner/{lcid:int?}")]
+        //[ResponseType(typeof(Pet))]
+        public IEnumerable<Pet> GetPetByAge(int ownerid)
         {
-            return db.Pets.Count(e => e.petId == id) > 0;
+            IEnumerable<Pet> pets = _petRepository.GetPetsByOwnerId(ownerid);
+            return pets;
+
         }
     }
 }
